@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.app_context().push()
@@ -9,7 +9,8 @@ app.app_context().push()
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://expenseuser:passwrd@localhost/expense_tracker"
 
 # bind db object to app/ add db connectivity
-db =SQLAlchemy(app)
+db = SQLAlchemy(app)
+CORS(app)
 
 # db table: id, created at, description, amount, category
 # migrate to PGAdmin

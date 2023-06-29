@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 app.app_context().push()
 
@@ -17,6 +18,7 @@ CORS(app)
 class Expense(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+    # created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     description = db.Column(db.String, nullable=True)
     amount = db.Column(db.Float, nullable=True)
     category = db.Column(db.String, nullable=True)
@@ -30,12 +32,11 @@ class Expense(db.Model):
         self.category = category
 
 
-
 @app.route("/expenses", methods=["POST"])
 def create_expense():
-    description = request.json["desciption"]
+    description = request.json["description"]
     amount = request.json["amount"]
-    category = request.category["category"]
+    category = request.json["category"]
 
     # invoke __init__  when create instance of a class
     expense = Expense(description, amount, category)
@@ -45,6 +46,7 @@ def create_expense():
     db.session.commit()
 
     created_expense = {
+        "created_at": expense.created_at,
         "description": expense.description,
         "amount": expense.amount,
         "category": expense.category
@@ -61,7 +63,7 @@ def get_expenses():
     for expense in expenses:
         retrieved_expense = {
             "id": expense.id,
-            "created_at": expense.created_at,
+            "created_at": expense.created_at.strftime("%x"),
             "description": expense.description,
             "amount": expense.amount,
             "category": expense.category
@@ -69,12 +71,6 @@ def get_expenses():
         expense_list.append(retrieved_expense)
     
     return expense_list
-
-
-
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
